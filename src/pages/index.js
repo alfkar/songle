@@ -4,6 +4,7 @@ import Cookies from 'js-cookie';
 import Login from '../components/Login';
 import UserDashboard from '../components/UserDashboard';
 import Player from '../components/Player'
+import PlayerCard from '@/components/PlayerCard';
 
 export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -70,7 +71,10 @@ export default function Home() {
         {isLoggedIn && userData ? (
           <div>
           <UserDashboard userData={userData} onLogout={handleLogout} />
-          <Player token={token}></Player>
+          <PlayerCard token={token}>
+            <Player token={token}></Player> 
+          </PlayerCard>
+          
           </div>
         ) : (
           <Login onLoginSuccess={handleLoginSuccess} />

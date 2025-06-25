@@ -3,7 +3,7 @@ import { generateRandomString, generateCodeChallenge } from '../../lib/pcke'; //
 
 const CLIENT_ID = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID;
 const REDIRECT_URI = process.env.NEXT_PUBLIC_REDIRECT_URI;
-const AUTHORIZATION_ENDPOINT = process.env.SPOTIFY_AUTHORIZATION_ENDPOINT;
+const AUTHORIZATION_ENDPOINT = process.env.NEXT_PUBLIC_SPOTIFY_AUTHORIZATION_ENDPOINT;
 const SCOPE = 'streaming \
               user-read-private \
               user-read-email ';
