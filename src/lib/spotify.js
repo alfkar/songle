@@ -81,7 +81,6 @@ export async function getSongsFromPlaylist(accessToken, nextUrl=null) {
       const currentTracks = data.items
       .filter(item => item.track && item.track.uri) 
       .map(item => item.track); 
-      console.log("currentTracks: ", currentTracks)
       if(!data.next){
         return currentTracks
       }

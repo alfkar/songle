@@ -26,7 +26,6 @@ export default function PlayerCard(props) {
   const fetchPlaylist = async (token) => {
       try{
         const response = await getPlaylist(token, SONGLE_PLAYLIST_ID);
-        console.log("Response.status: ", response.status)
         if(response.ok){
         const data = await response.json()
         let songs = localStorage.getItem(data.snapshot_id);
@@ -34,7 +33,6 @@ export default function PlayerCard(props) {
           songs = await fetchSongsFromPlaylist(token);
           localStorage.setItem(data.snapshot_id, JSON.stringify(songs)); 
         }
-        console.log("Songs: ", songs)
         const mappedPlaylistInfo = {
             URI: data.uri,
             snapshot_id: data.snapshot_id,
