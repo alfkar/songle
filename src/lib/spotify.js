@@ -69,7 +69,8 @@ export async function getPlaylist(accessToken, playlistURI) {
 export async function getSongsFromPlaylist(accessToken, nextUrl=null) {
   let requestURL=SPOTIFY_PLAYLIST_ENDPOINT.concat(PLAYLIST_ID, '/tracks')
   if(nextUrl){
-    requestURL=nextURL
+    console.log("Next URL: ", nextUrl)
+    requestURL=nextUrl
   }
   try {
     const response = await fetch(requestURL, {
@@ -81,10 +82,12 @@ export async function getSongsFromPlaylist(accessToken, nextUrl=null) {
       const currentTracks = data.items
       .filter(item => item.track && item.track.uri) 
       .map(item => item.track); 
+
+      console.log("Next URl: ", data.next)
       if(!data.next){
         return currentTracks
       }
-      const remainingTracks = await getSongsFromPlaylist(accessToken, PLAYLIST_ID, data.next);
+      const remainingTracks = await getSongsFromPlaylist(accessToken, data.next);
       return currentTracks.concat(remainingTracks);
     }
   }catch (error){

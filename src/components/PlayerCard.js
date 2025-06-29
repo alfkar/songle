@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getPlaylist, getSongsFromPlaylist } from '@/lib/spotify';
+import Prando from 'prando';
 import { useRouter } from 'next/router';
 const SONGLE_PLAYLIST_ID = process.env.NEXT_PUBLIC_SONGLE_PLAYLIST_ID; 
 
@@ -57,7 +58,18 @@ export default function PlayerCard(props) {
     }catch(error){
     console.error('Error fetching songs:', error);
   }
-    
+  }
+  /**
+   * 
+   * @param {number} nSongs 
+   * @returns random index deterministic from date
+   */
+  const dailyIndex = async (nSongs) => {
+    //extract YYYY-MM-DD
+    let date = new Date().toISOString.split("T")[0];
+    //Generate pseudo random number based on todays date
+    let dailyIndex = new Prando(date).nextInt(0, nSongs)
+    return dailyIndex
   } 
 
 
