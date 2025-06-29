@@ -17,7 +17,7 @@ useEffect(() => {
     window.onSpotifyWebPlaybackSDKReady = () => {
 
         const player = new window.Spotify.Player({
-            name: 'Web Playback SDK',
+            name: 'Songle',
             getOAuthToken: cb => { cb(props.token); },
             volume: 0.5
         });
@@ -33,7 +33,12 @@ useEffect(() => {
         });
 
 
-        player.connect();
+        player.connect().then(success => {
+            if (success) {
+              console.log('The Web Playback SDK successfully connected to Spotify!');
+            }
+          })
+          
 
         player.addListener('player_state_changed', ( state => {
 
@@ -50,7 +55,12 @@ useEffect(() => {
             });
         
         }));
-        
+        return () => {
+            if (player) {
+                player.disconnect(); // Disconnect the Spotify player
+                console.log('Spotify Web Playback SDK disconnected during cleanup.');
+            }
+        }
 
     };
 }, []);

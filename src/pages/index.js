@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Cookies from 'js-cookie'; 
 import Login from '../components/Login';
-import UserDashboard from '../components/UserDashboard';
 import Player from '../components/Player'
+import UserDashboard from '../components/UserDashboard';
 import PlayerCard from '@/components/PlayerCard';
 
 export default function Home() {
@@ -63,23 +63,23 @@ export default function Home() {
   };
 
   return (
-   <div className='grid items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)'>
-      <head>
-        <title>Spotify PKCE Next.js</title>
-      </head>
-      <main>
-        {isLoggedIn && userData ? (
-          <div>
-          <UserDashboard userData={userData} onLogout={handleLogout} />
-          <PlayerCard token={token}>
-            <Player token={token}></Player> 
-          </PlayerCard>
-          
-          </div>
-        ) : (
-          <Login onLoginSuccess={handleLoginSuccess} />
-        )}
-      </main>
-    </div>
-  );
+    <div className='grid items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)'>
+       <head>
+         <title>Spotify PKCE Next.js</title>
+       </head>
+       <main>
+         {isLoggedIn && userData ? (
+           <div>
+           <UserDashboard userData={userData} onLogout={handleLogout} />
+           <PlayerCard token={token}>
+           <Player token={token}></Player> 
+           </PlayerCard>
+ 
+           </div>
+         ) : (
+           <Login onLoginSuccess={handleLoginSuccess} />
+         )}
+       </main>
+     </div>
+   );
 }

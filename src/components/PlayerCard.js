@@ -1,27 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { getPlaylist, getSongsFromPlaylist } from '@/lib/spotify';
 import Prando from 'prando';
-import { useRouter } from 'next/router';
+
 const SONGLE_PLAYLIST_ID = process.env.NEXT_PUBLIC_SONGLE_PLAYLIST_ID; 
 
-export default function PlayerCard(props) {
+// Changed props to { initialToken, children } to destructure both the token prop and the children prop
+export default function PlayerCard({ token: initialToken, children }) {
   const [playlistInfo, setPlaylistInfo] = useState();
   const [token, setToken] = useState('');
 
   useEffect(() => {
-    const accessToken = props.token
-    if (accessToken) {
-      setToken(accessToken);
+    if (initialToken) {
+      setToken(initialToken);
     } else {
-      setError("No Spotify access token found.");
+      console.error("No Spotify access token found.");
     }
-  }, []);
+  }, [initialToken]);
 
   useEffect(() => {
     if (token) {
      fetchPlaylist(token);
     }
- 
   }, [token]);
   
   const fetchPlaylist = async (token) => {
@@ -33,6 +32,9 @@ export default function PlayerCard(props) {
         if(!songs){
           songs = await fetchSongsFromPlaylist(token);
           localStorage.setItem(data.snapshot_id, JSON.stringify(songs)); 
+        } else {
+          // If songs exist in localStorage, parse them
+          songs = JSON.parse(songs);
         }
         const mappedPlaylistInfo = {
             URI: data.uri,
@@ -42,7 +44,7 @@ export default function PlayerCard(props) {
         setPlaylistInfo(mappedPlaylistInfo)
         }
         else{
-          console.log("Response not OK")
+          console.log("Response not OK", response.status);
         }
       } 
       catch(error){
@@ -50,33 +52,32 @@ export default function PlayerCard(props) {
       }       
   }
 
-
   const fetchSongsFromPlaylist = async (token) => {
     try{
       const songs = await getSongsFromPlaylist(token)
       return songs
     }catch(error){
-    console.error('Error fetching songs:', error);
+      console.error('Error fetching songs:', error);
+      return [];
   }
   }
-  /**
-   * 
-   * @param {number} nSongs 
-   * @returns random index deterministic from date
-   */
-  const dailyIndex = async (nSongs) => {
-    //extract YYYY-MM-DD
-    let date = new Date().toISOString.split("T")[0];
-    //Generate pseudo random number based on todays date
-    let dailyIndex = new Prando(date).nextInt(0, nSongs)
-    return dailyIndex
+
+  const dailyIndex = (nSongs) => {
+    let date = new Date().toISOString().split("T")[0];
+    let index = new Prando(date).nextInt(0, nSongs);
+    return index;
   } 
-
-
 
   return (
     <div>
-
+      {playlistInfo && (
+        <>
+          <h3>Playlist: {playlistInfo.snapshot_id}</h3>
+          {/* This line renders whatever JSX is passed between <PlayerCard> and </PlayerCard> */}
+          {children} 
+        </>
+      )}
+      {!playlistInfo && <p>Loading playlist info...</p>}
     </div>
   );
 }
