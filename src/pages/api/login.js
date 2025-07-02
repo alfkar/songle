@@ -6,7 +6,8 @@ const REDIRECT_URI = process.env.NEXT_PUBLIC_REDIRECT_URI;
 const AUTHORIZATION_ENDPOINT = process.env.NEXT_PUBLIC_SPOTIFY_AUTHORIZATION_ENDPOINT;
 const SCOPE = 'streaming \
               user-read-private \
-              user-read-email ';
+              user-read-email \
+              user-modify-playback-state';
 
 export default async function handler(req, res) {
   const code_verifier = generateRandomString(64);
