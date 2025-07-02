@@ -98,7 +98,7 @@ export async function getSongsFromPlaylist(accessToken, nextUrl=null) {
 
 export async function playSong(accessToken, index, playerID) {
   
-  const url = `https://api.spotify.com/v1/me/player/play?device_id=$?device_id=${playerID}`; 
+  const url = `https://api.spotify.com/v1/me/player/play?device_id=${playerID}`; 
   console.log("url: ", url)
   const playlistURI = `spotify:playlist:${PLAYLIST_ID}`;
 
@@ -119,9 +119,7 @@ export async function playSong(accessToken, index, playerID) {
     body: JSON.stringify(requestBody) 
   });
 
-  if (response.status === 204) {
-    return { success: true };
-  }
+
   return response
 }
 
