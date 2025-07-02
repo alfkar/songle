@@ -71,13 +71,13 @@ export default function PlayerCard({ token: initialToken, children }) {
     return index;
   } 
 
-  const playDailySong = async (token) => {
+  const playDailySong = async () => {
     if(!playerInfo.ready){
       console.log('Player not ready')
       return
     }
     try{
-      console.log('PLayerINfo: ', playerInfo)
+      console.log('PLayerInfo: ', playerInfo)
     const resposnse = await playSong(token, dailyIndex(playlistInfo.length), playerInfo.id)
     }catch(error){
       console.error('Error playing song', error)
@@ -100,7 +100,7 @@ export default function PlayerCard({ token: initialToken, children }) {
       {playlistInfo && (
         <>
           <Player token={initialToken} isReady={playerIsReadyHandler}></Player> 
-          <Button onClick={playDailySong}> Play Daily Song</Button>
+          <Button onClick={playDailySong()}> Play Daily Song</Button>
           <SongPicker songs={playlistInfo.songs} dailySong={"Father And Son"} handleSongGuess={handleCorrectGuess}> </SongPicker>
           {children} 
         </>
