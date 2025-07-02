@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { getPlaylist, getSongsFromPlaylist } from '@/lib/spotify';
+import { getPlaylist, getSongsFromPlaylist, playSong } from '@/lib/spotify';
 import Prando from 'prando';
-
+import Player from '@/components/Player'
+import SongPicker from '@/components/SongPicker'
 const SONGLE_PLAYLIST_ID = process.env.NEXT_PUBLIC_SONGLE_PLAYLIST_ID; 
-
+import {Button} from '@/components/ui/8bit/button'
 // Changed props to { initialToken, children } to destructure both the token prop and the children prop
 export default function PlayerCard({ token: initialToken, children }) {
   const [playlistInfo, setPlaylistInfo] = useState();
   const [token, setToken] = useState('');
+  const [playerInfo, setPlayerReady] = useState(false);
 
   useEffect(() => {
     if (initialToken) {
@@ -39,9 +41,10 @@ export default function PlayerCard({ token: initialToken, children }) {
         const mappedPlaylistInfo = {
             URI: data.uri,
             snapshot_id: data.snapshot_id,
-            tracks: songs
+            length: data.tracks.total,
+            songs: songs
           }
-        setPlaylistInfo(mappedPlaylistInfo)
+        setPlaylistInfo(mappedPlaylistInfo);
         }
         else{
           console.log("Response not OK", response.status);
@@ -68,12 +71,37 @@ export default function PlayerCard({ token: initialToken, children }) {
     return index;
   } 
 
+  const playDailySong = async (token) => {
+    if(!playerInfo.ready){
+      console.log('Player not ready')
+      return
+    }
+    try{
+      console.log('PLayerINfo: ', playerInfo)
+    const resposnse = await playSong(token, dailyIndex(playlistInfo.length), playerInfo.id)
+    }catch(error){
+      console.error('Error playing song', error)
+    }
+  } 
+
+  const handleCorrectGuess = (isCorrect) => {
+    console.log("Song guess is: ", isCorrect)
+  }
+  const playerIsReadyHandler = (playerID) => {
+    const mappedPlayerInfo = {
+      id: playerID,
+      ready: true,
+    }
+    setPlayerReady(mappedPlayerInfo);
+
+  }
   return (
-    <div>
+    <div className="flex flex-col gap-2 mt-6">
       {playlistInfo && (
         <>
-          <h3>Playlist: {playlistInfo.snapshot_id}</h3>
-          {/* This line renders whatever JSX is passed between <PlayerCard> and </PlayerCard> */}
+          <Player token={initialToken} isReady={playerIsReadyHandler}></Player> 
+          <Button onClick={playDailySong}> Play Daily Song</Button>
+          <SongPicker songs={playlistInfo.songs} dailySong={"Father And Son"} handleSongGuess={handleCorrectGuess}> </SongPicker>
           {children} 
         </>
       )}

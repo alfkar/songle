@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Cookies from 'js-cookie'; 
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/8bit/avatar"
 import { Badge } from '@/components/ui/8bit/badge';
+import { Button } from './ui/8bit/button';
+
 export default function UserDashboard({ userData, onLogout, onRefreshToken }) {
   const [user, setUser] = useState(userData);
   const [tokenInfo, setTokenInfo] = useState({});
@@ -58,10 +60,12 @@ export default function UserDashboard({ userData, onLogout, onRefreshToken }) {
         <Avatar variant="retro" className="size-20">
             <AvatarImage src={user.images[0].url}alt="Profile" />
         </Avatar>
+        <div className="flex flex-col gap-4 ">
         <Badge className="text-xl">{user?.display_name || user?.id}</Badge>
+        <Button onClick={handleLogout} style={{ marginLeft: '10px' }}>Logout</Button>
+        </div>
         </div>
       )}
-      <button onClick={handleLogout} style={{ marginLeft: '10px' }}>Logout</button>
     </div>
   );
 }

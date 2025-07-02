@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 
-function WebPlayback(props) {
+function WebPlayback({token, isReady}) {
     const [player, setPlayer] = useState(undefined);
     const [is_paused, setPaused] = useState(false);
     const [is_active, setActive] = useState(false);
     const [current_track, setTrack] = useState(track);
-
+    const [id, setId] = useState('');
 useEffect(() => {
 
     const script = document.createElement("script");
@@ -18,7 +18,7 @@ useEffect(() => {
 
         const player = new window.Spotify.Player({
             name: 'Songle',
-            getOAuthToken: cb => { cb(props.token); },
+            getOAuthToken: cb => { cb(token); },
             volume: 0.5
         });
 
@@ -26,6 +26,7 @@ useEffect(() => {
 
         player.addListener('ready', ({ device_id }) => {
             console.log('Ready with Device ID', device_id);
+            isReady(device_id)
         });
 
         player.addListener('not_ready', ({ device_id }) => {
@@ -81,19 +82,6 @@ return (
                                   current_track.artists[0].name
                                   }</div>
                 </div>
-                <button className="btn-spotify" onClick={() => { player.previousTrack() }} >
-      &lt;&lt;
-</button>
-
-<button className="btn-spotify" onClick={() => { player.togglePlay() }} >
-     { is_paused ? "PLAY" : "PAUSE" }
-</button>
-
-<button className="btn-spotify" onClick={() => { player.nextTrack() }} >
-      &gt;&gt;
-</button>
-
-                
             </div>
         </div>
      </>

@@ -72,7 +72,6 @@ export default function Home() {
            <div>
            <UserDashboard userData={userData} onLogout={handleLogout} />
            <PlayerCard token={token}>
-           <Player token={token}></Player> 
            </PlayerCard>
  
            </div>

@@ -3,8 +3,8 @@ const SPOTIFY_TOKEN_ENDPOINT = process.env.NEXT_PUBLIC_SPOTIFY_TOKEN_ENDPOINT;
 const SPOTIFY_USER_PROFILE_ENDPOINT = process.env.NEXT_PUBLIC_SPOTIFY_USER_PROFILE_ENDPOINT;
 const SPOTIFY_PLAYLIST_ENDPOINT = process.env.NEXT_PUBLIC_SPOTIFY_GET_PLAYLIST_ENDPOINT;
 const CLIENT_ID = process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID; 
-const PLAYLIST_ID = process.env.NEXT_PUBLIC_SONGLE_PLAYLIST_ID
-
+const PLAYLIST_ID = process.env.NEXT_PUBLIC_SONGLE_PLAYLIST_ID;
+const SPOTIFY_PLAY_SONG_ENDPINT = process.env.NEXT_PUBLIC_SPOTIFY_PLAY_SONG;
 
 export async function getToken(code, redirectUri, code_verifier) {
   const response = await fetch(SPOTIFY_TOKEN_ENDPOINT, {
@@ -95,3 +95,33 @@ export async function getSongsFromPlaylist(accessToken, nextUrl=null) {
   throw error
   }
 }
+
+export async function playSong(accessToken, index, playerID) {
+  
+  const url = `https://api.spotify.com/v1/me/player/play?device_id=$?device_id=${playerID}`; 
+  console.log("url: ", url)
+  const playlistURI = `spotify:playlist:${PLAYLIST_ID}`;
+
+  const requestBody = {
+    context_uri: playlistURI,
+    offset: {
+      position: index 
+    },
+    position_ms: 0
+  };
+
+  const response = await fetch(url, {
+    method: 'PUT',
+    headers: {
+      'Authorization': 'Bearer ' + accessToken,
+      'Content-Type': 'application/json', 
+    },
+    body: JSON.stringify(requestBody) 
+  });
+
+  if (response.status === 204) {
+    return { success: true };
+  }
+  return response
+}
+
