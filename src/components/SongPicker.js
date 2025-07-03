@@ -1,3 +1,4 @@
+// components/SongPicker.jsx
 "use client"
 
 import * as React from "react"
@@ -18,57 +19,89 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/8bit/popover"
-import { 
+import {
   Alert,
   AlertTitle,
   AlertDescription
- } from "./ui/8bit/alert"
+} from "./ui/8bit/alert"
 
-export default function SongPicker({ songs, dailySong, handleSongGuess}) { 
+// Receive elapsedTime and formatTime as props
+export default function SongPicker({ songs, dailySong, handleSongGuess, elapsedTime, formatTime, isRunning }) {
   const [open, setOpen] = React.useState(false)
   const [correctSong, setCorrectSong] = React.useState(false)
   const [value, setValue] = React.useState("")
+  const [showErrorAnimation, setShowErrorAnimation] = React.useState(false);
+
+  React.useEffect(() => {
+    let timer;
+    if (showErrorAnimation) {
+      timer = setTimeout(() => {
+        setShowErrorAnimation(false);
+      }, 500); 
+    }
+    return () => clearTimeout(timer);
+  }, [showErrorAnimation]);
+
+
+  const handleSongSelection = (currentValue, selectedSongName) => {
+    setValue(currentValue === value ? "" : currentValue);
+    setOpen(false); 
+
+    const isCorrect = selectedSongName === dailySong;
+    setCorrectSong(isCorrect); 
+    handleSongGuess(isCorrect); 
+
+    if (!isCorrect) {
+      setShowErrorAnimation(true); 
+    }
+  };
+
   if (correctSong) {
     return (
       <Alert variant="default">
-          <AlertTitle>{dailySong} is correct!</AlertTitle>
+        <AlertTitle>{dailySong} is correct!</AlertTitle>
+        <AlertDescription>
+          Your time: {formatTime(elapsedTime)}
+        </AlertDescription>
       </Alert>
     );
   }
+
+  const triggerClassName = cn(
+    "w-105 justify-between overflow-scroll",
+    showErrorAnimation && "shake-error border-red-500",
+  );
+
   return (
-    <Popover className="w-full" open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-105 justify-between overflow-scroll"
+          className={triggerClassName}
+          disabled={!isRunning}
         >
-        <span className="flex-1 min-w-0 truncate">
-          {value
-            ? songs.find((s) => s.name === value)?.name
-            : "Select a song..."}
-        </span>
+          <span className="flex-1 min-w-0 truncate">
+            {value
+              ? songs.find((s) => s.name === value)?.name
+              : "Select a song..."}
+          </span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0">         
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" side="bottom"   avoidCollisions={false} >
         <Command>
           <CommandInput placeholder="Search for a song" />
           <CommandList>
-            <CommandEmpty>No song found.</CommandEmpty> {/* Changed empty text */}
+            <CommandEmpty>No song found.</CommandEmpty>
             <CommandGroup>
               {songs.map((song) => (
                 <CommandItem
-                  key={song.id} // Use a unique ID if available, otherwise song.name (if guaranteed unique)
-                  value={song.name} // The value to set when selected
-                  onSelect={(currentValue) => {
-                    setValue(currentValue === value ? "" : currentValue)
-                    setOpen(false)
-                    const isCorrect = song.name === dailySong;
-                    setCorrectSong(isCorrect);
-                    handleSongGuess(isCorrect);
-                    
-                  }}
+                  key={song.id || song.name}
+                  value={song.name}
+                  onSelect={(currentValue) =>
+                    handleSongSelection(currentValue, song.name)
+                  }
                 >
                   <CheckIcon
                     className={cn(
@@ -84,5 +117,5 @@ export default function SongPicker({ songs, dailySong, handleSongGuess}) {
         </Command>
       </PopoverContent>
     </Popover>
-  )
+  );
 }
