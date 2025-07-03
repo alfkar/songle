@@ -199,16 +199,17 @@ export default function PlayerCard({ token: initialToken, children }) {
               <Button onClick={playDailySong} disabled={!playerInfo.ready}> Play Daily Song</Button>
             </div>
           ) : (
-            <div>
+            <div className="flex-col flex items-center justify-center">
               <Avatar variant="retro" className="w-90 h-26">
                   <AvatarImage src={"/music.gif"}alt="Profile" className="w-108 h-25 object-cover mt-2"/>
               </Avatar>
-              <Alert className=" text-4xl font-bold flex items-center justify-center">
+              <p className=" text-4xl font-bold flex items-center justify-center mt-4">
                 {formatTime(elapsedTime)}
-              </Alert>
+              </p>
 
             </div>
           )}
+          <div className="mt-5">
             <SongPicker
             songs={playlistInfo.songs}
             dailySong={"Father And Son"}
@@ -217,9 +218,8 @@ export default function PlayerCard({ token: initialToken, children }) {
             formatTime={formatTime}
             isRunning={isRunning}
               />
+          </div>
 
-
-          {children}
         </>
       )}
       {!playlistInfo && <p>Loading playlist info...</p>}
