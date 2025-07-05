@@ -108,7 +108,6 @@ export default function PlayerCard({ token: initialToken, children }) {
    */
   const stopTimer = () => {
     if (isRunning) {
-      setIsRunning(false);
       if (timerIntervalId) {
         clearInterval(timerIntervalId);
         setTimerIntervalId(null);
@@ -248,7 +247,7 @@ export default function PlayerCard({ token: initialToken, children }) {
 
             </div>
           )}
-          <div className="mt-5">
+          <div className="mt-5 flex-col flex gap-4">
             <SongPicker
             songs={playlistInfo.songs}
             dailySong={dailySongName}
@@ -256,6 +255,7 @@ export default function PlayerCard({ token: initialToken, children }) {
             elapsedTime={elapsedTime}
             formatTime={formatTime}
             isRunning={isRunning}
+            className="w-full"
               />
             <ArtistPicker
             songs={playlistInfo.songs}
@@ -264,6 +264,7 @@ export default function PlayerCard({ token: initialToken, children }) {
             elapsedTime={elapsedTime}
             formatTime={formatTime}
             isRunning={isRunning}
+            className="w-full"
               />
           </div>
 
