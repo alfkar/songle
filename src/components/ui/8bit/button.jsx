@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils";
 
 import { Button as ShadcnButton } from "@/components/ui/button";
 
-import "./styles/retro.css";
 
 export const buttonVariants = cva("", {
   variants: {

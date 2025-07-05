@@ -5,7 +5,6 @@ import { cva } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
-import "./styles/retro.css";
 
 export const avatarVariants = cva("", {
   variants: {

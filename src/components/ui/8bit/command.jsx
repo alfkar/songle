@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/command";
 import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
-import "./styles/retro.css";
 
 function Command({
   className,

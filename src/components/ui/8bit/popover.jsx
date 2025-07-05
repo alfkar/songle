@@ -9,7 +9,6 @@ import {
   PopoverTrigger as ShadcnPopoverTrigger,
 } from "@/components/ui/popover";
 
-import "./styles/retro.css";
 
 const Popover = ShadcnPopover;
 

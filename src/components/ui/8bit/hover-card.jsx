@@ -8,7 +8,6 @@ import {
   HoverCardTrigger as ShadcnHoverCardTrigger,
 } from "@/components/ui/hover-card";
 
-import "./styles/retro.css";
 
 export const hoverCardVariants = cva("", {
   variants: {
