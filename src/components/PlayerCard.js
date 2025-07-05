@@ -11,6 +11,7 @@ import {
   Alert,
 } from "./ui/8bit/alert"
 import { CardDescription } from './ui/card';
+import ArtistPicker from './ArtistPicker';
 
 
 export default function PlayerCard({ token: initialToken, children }) {
@@ -19,12 +20,16 @@ export default function PlayerCard({ token: initialToken, children }) {
   const [playerInfo, setPlayerReady] = useState(false);
   const [currentDate, setCurrentDate] = useState(null);
   const [dailySongName, setDailySongName] = useState('');
+  const [dailyArtists, setDailyArtists] = useState();
   // Timer state variables
   const [elapsedTime, setElapsedTime] = useState(0);
   const [timerIntervalId, setTimerIntervalId] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
   const startTimeRef = useRef(null);
-  
+  // Guessed
+  const [correctSongGuessed ,setCorrectSongGuessed] = useState(false)
+  const [correctArtistGuessed ,setCorrectArtistGuessed] = useState(false)
+
   useEffect(() => {
   let date = new Date().toDateString();
   {setCurrentDate(date)}
@@ -162,9 +167,13 @@ export default function PlayerCard({ token: initialToken, children }) {
       console.error("Playlist info not ready")
       return
     }
-    const songName = playlistInfo.songs[dailyIndex(playlistInfo.length)].name
-    console.log(songName)
+    const song = playlistInfo.songs[dailyIndex(playlistInfo.length)]
+    const songName = song.name
+    const artists = song.artists
     setDailySongName(songName)
+    setDailyArtists(artists)
+    console.log(song)
+    console.log(song.artists)
   }
   const playDailySong = async () => {
     if(!playerInfo.ready){
@@ -185,9 +194,23 @@ export default function PlayerCard({ token: initialToken, children }) {
     }
   }
 
-  const handleCorrectGuess = (isCorrect) => {
-    console.log("Song guess is: ", isCorrect)
+  const handleSongGuess = (isCorrect) => {
     if (isCorrect) {
+      setCorrectSongGuessed(true)
+      if(correctArtistGuessed ){
+        stopTimer()
+      }
+    } else{
+      startTimeRef.current -=5000;
+      setElapsedTime(elapsedTime+5000);
+    }
+  }
+  const handleArtistGuess = (isCorrect) => {
+    if (isCorrect) {
+      setCorrectArtistGuessed(true)
+      if(correctSongGuessed){
+        stopTimer()
+      }
     } else{
       startTimeRef.current -=5000;
       setElapsedTime(elapsedTime+5000);
@@ -229,7 +252,15 @@ export default function PlayerCard({ token: initialToken, children }) {
             <SongPicker
             songs={playlistInfo.songs}
             dailySong={dailySongName}
-            handleSongGuess={handleCorrectGuess}
+            handleSongGuess={handleSongGuess}
+            elapsedTime={elapsedTime}
+            formatTime={formatTime}
+            isRunning={isRunning}
+              />
+            <ArtistPicker
+            songs={playlistInfo.songs}
+            dailyArtists={dailyArtists}
+            handleArtistGuess={handleArtistGuess}
             elapsedTime={elapsedTime}
             formatTime={formatTime}
             isRunning={isRunning}
