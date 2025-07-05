@@ -21,7 +21,7 @@
     "cookie": "^1.0.2",
     "js-cookie": "^3.0.5",
     "lucide-react": "^0.522.0",
-    "next": "15.3.4",
+    "next": "^15.3.5",
     "next-transpile-modules": "^10.0.1",
     "prando": "^6.0.1",
     "react": "^19.0.0",

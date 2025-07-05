@@ -18,11 +18,13 @@ export default function PlayerCard({ token: initialToken, children }) {
   const [token, setToken] = useState('');
   const [playerInfo, setPlayerReady] = useState(false);
   const [currentDate, setCurrentDate] = useState(null);
+  const [dailySongName, setDailySongName] = useState('');
   // Timer state variables
-  const [elapsedTime, setElapsedTime] = useState(0); // Now stores milliseconds
+  const [elapsedTime, setElapsedTime] = useState(0);
   const [timerIntervalId, setTimerIntervalId] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
-  const startTimeRef = useRef(null); // Use a ref to store the start time
+  const startTimeRef = useRef(null);
+  
   useEffect(() => {
   let date = new Date().toDateString();
   {setCurrentDate(date)}
@@ -40,7 +42,14 @@ export default function PlayerCard({ token: initialToken, children }) {
     if (token) {
       fetchPlaylist(token);
     }
+    dailySong();
+    
   }, [token]);
+  useEffect(() => {
+    if(playlistInfo){
+      dailySong();
+    }
+  }, [playlistInfo])
 
   // Cleanup the interval when the component unmounts
   useEffect(() => {
@@ -99,7 +108,7 @@ export default function PlayerCard({ token: initialToken, children }) {
         clearInterval(timerIntervalId);
         setTimerIntervalId(null);
       }
-      startTimeRef.current = null; // Clear the ref value when stopped
+      startTimeRef.current = null; 
     }
   };
 
@@ -132,7 +141,7 @@ export default function PlayerCard({ token: initialToken, children }) {
       console.error('Error fetching playlist:', error);
     }
   }
-
+  
   const fetchSongsFromPlaylist = async (token) => {
     try{
       const songs = await getSongsFromPlaylist(token)
@@ -148,7 +157,15 @@ export default function PlayerCard({ token: initialToken, children }) {
     let index = new Prando(date).nextInt(0, nSongs);
     return index;
   }
-
+  const dailySong = () => {
+    if(!playlistInfo){
+      console.error("Playlist info not ready")
+      return
+    }
+    const songName = playlistInfo.songs[dailyIndex(playlistInfo.length)].name
+    console.log(songName)
+    setDailySongName(songName)
+  }
   const playDailySong = async () => {
     if(!playerInfo.ready){
       console.log('Player not ready')
@@ -212,7 +229,7 @@ export default function PlayerCard({ token: initialToken, children }) {
           <div className="mt-5">
             <SongPicker
             songs={playlistInfo.songs}
-            dailySong={"Father And Son"}
+            dailySong={dailySongName}
             handleSongGuess={handleCorrectGuess}
             elapsedTime={elapsedTime}
             formatTime={formatTime}

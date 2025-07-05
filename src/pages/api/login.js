@@ -10,11 +10,13 @@ const SCOPE = 'streaming \
               user-modify-playback-state';
 
 export default async function handler(req, res) {
+
   const code_verifier = generateRandomString(64);
   const code_challenge = await generateCodeChallenge(code_verifier);
 
   res.setHeader('Set-Cookie', `spotify_code_verifier=${code_verifier}; Path=/; HttpOnly; SameSite=Lax; Max-Age=300`); 
 
+  
   const authUrl = new URL(AUTHORIZATION_ENDPOINT);
   const params = {
     response_type: 'code',
