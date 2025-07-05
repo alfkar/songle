@@ -188,7 +188,6 @@ export default function PlayerCard({ token: initialToken, children }) {
   const handleCorrectGuess = (isCorrect) => {
     console.log("Song guess is: ", isCorrect)
     if (isCorrect) {
-      stopTimer();
     } else{
       startTimeRef.current -=5000;
       setElapsedTime(elapsedTime+5000);

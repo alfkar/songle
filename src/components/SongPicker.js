@@ -31,6 +31,7 @@ export default function SongPicker({ songs, dailySong, handleSongGuess, elapsedT
   const [correctSong, setCorrectSong] = React.useState(false)
   const [value, setValue] = React.useState("")
   const [showErrorAnimation, setShowErrorAnimation] = React.useState(false);
+  const [result, setResult] = React.useState('');
 
   React.useEffect(() => {
     let timer;
@@ -50,6 +51,9 @@ export default function SongPicker({ songs, dailySong, handleSongGuess, elapsedT
     const isCorrect = selectedSongName === dailySong;
     setCorrectSong(isCorrect); 
     handleSongGuess(isCorrect); 
+    if(isCorrect){
+      setResult(elapsedTime)
+    }
 
     if (!isCorrect) {
       setShowErrorAnimation(true); 
@@ -61,7 +65,7 @@ export default function SongPicker({ songs, dailySong, handleSongGuess, elapsedT
       <Alert variant="default">
         <AlertTitle>{dailySong} is correct!</AlertTitle>
         <AlertDescription>
-          Your time: {formatTime(elapsedTime)}
+          Your time: {formatTime(result)}
         </AlertDescription>
       </Alert>
     );
