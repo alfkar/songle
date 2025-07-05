@@ -43,7 +43,12 @@ export default function ArtistPicker({ songs, dailyArtists, handleArtistGuess, e
     }
     return () => clearTimeout(timer);
   }, [showErrorAnimation]);
-
+  React.useEffect(() => {
+    setCorrectArtist(false);
+    setValue("");
+    setResult('');
+  }, [dailyArtists]);
+  
   const allArtists = React.useMemo(() => {
     const artistNames = new Set();
     songs.forEach(song => {

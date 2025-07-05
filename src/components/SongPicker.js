@@ -42,8 +42,12 @@ export default function SongPicker({ songs, dailySong, handleSongGuess, elapsedT
     }
     return () => clearTimeout(timer);
   }, [showErrorAnimation]);
-
-
+  React.useEffect(() => {
+    setCorrectSong(false);
+    setValue("");
+    setResult('');
+  }, [dailySong]);
+  
   const handleSongSelection = (currentValue, selectedSongName) => {
     setValue(currentValue === value ? "" : currentValue);
     setOpen(false); 

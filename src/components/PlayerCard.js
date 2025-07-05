@@ -7,11 +7,8 @@ const SONGLE_PLAYLIST_ID = process.env.NEXT_PUBLIC_SONGLE_PLAYLIST_ID;
 import {Button} from '@/components/ui/8bit/button'
 import { Avatar, AvatarImage} from "@/components/ui/8bit/avatar"
 import { Card,CardHeader,CardContent, CardTitle } from './ui/8bit/card';
-import {
-  Alert,
-} from "./ui/8bit/alert"
-import { CardDescription } from './ui/card';
 import ArtistPicker from './ArtistPicker';
+import { HoverCard, HoverCardContent,HoverCardTrigger } from './ui/8bit/hover-card';
 
 
 export default function PlayerCard({ token: initialToken, children }) {
@@ -19,6 +16,7 @@ export default function PlayerCard({ token: initialToken, children }) {
   const [token, setToken] = useState('');
   const [playerInfo, setPlayerReady] = useState(false);
   const [currentDate, setCurrentDate] = useState(null);
+  const [displaygDate, setDisplayDate] = useState();
   const [dailySongName, setDailySongName] = useState('');
   const [dailyArtists, setDailyArtists] = useState();
   // Timer state variables
@@ -29,11 +27,12 @@ export default function PlayerCard({ token: initialToken, children }) {
   // Guessed
   const [correctSongGuessed ,setCorrectSongGuessed] = useState(false)
   const [correctArtistGuessed ,setCorrectArtistGuessed] = useState(false)
-
+  const [stopPlaying, setStopPlaying] = useState(false)
   useEffect(() => {
-  let date = new Date().toDateString();
+  let date = new Date();
   {setCurrentDate(date)}
-  })
+  {setDisplayDate(date.toDateString())};
+  }, [])
 
   useEffect(() => {
     if (initialToken) {
@@ -50,11 +49,14 @@ export default function PlayerCard({ token: initialToken, children }) {
     dailySong();
     
   }, [token]);
+
   useEffect(() => {
-    if(playlistInfo){
+    if(playlistInfo && currentDate){
       dailySong();
     }
-  }, [playlistInfo])
+    setCorrectArtistGuessed(false)
+    setCorrectSongGuessed(false)
+  }, [playlistInfo,currentDate])
 
   // Cleanup the interval when the component unmounts
   useEffect(() => {
@@ -113,9 +115,24 @@ export default function PlayerCard({ token: initialToken, children }) {
         setTimerIntervalId(null);
       }
       startTimeRef.current = null; 
+      setStopPlaying(true);
     }
   };
 
+  const changeDate = (incOrDec) => { 
+    if (!currentDate) {
+      console.error("Date not set yet");
+      return;
+    }
+
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() + incOrDec); 
+    setCurrentDate(newDate); 
+    setDisplayDate(newDate.toDateString());
+    setStopPlaying(true);
+    setIsRunning(false);
+    dailySong();
+  };
 
   const fetchPlaylist = async (token) => {
     try{
@@ -157,8 +174,8 @@ export default function PlayerCard({ token: initialToken, children }) {
   }
 
   const dailyIndex = (nSongs) => {
-    let date = new Date().toISOString().split("T")[0];
-    let index = new Prando(date).nextInt(0, nSongs);
+    let dateString = currentDate.toISOString().split("T")[0];
+    let index = new Prando(dateString).nextInt(0, nSongs);
     return index;
   }
   const dailySong = () => {
@@ -169,10 +186,10 @@ export default function PlayerCard({ token: initialToken, children }) {
     const song = playlistInfo.songs[dailyIndex(playlistInfo.length)]
     const songName = song.name
     const artists = song.artists
+    console.log("Daily song:", songName)
+    console.log("Daily artists:", artists)
     setDailySongName(songName)
     setDailyArtists(artists)
-    console.log(song)
-    console.log(song.artists)
   }
   const playDailySong = async () => {
     if(!playerInfo.ready){
@@ -187,6 +204,7 @@ export default function PlayerCard({ token: initialToken, children }) {
       const response = await playSong(token, dailyIndex(playlistInfo.length), playerInfo.id)
       if(response.ok){
         startTimer()
+        setStopPlaying(false)
       }
     }catch(error){
       console.error('Error playing song', error)
@@ -224,14 +242,49 @@ export default function PlayerCard({ token: initialToken, children }) {
     setPlayerReady(mappedPlayerInfo);
   }
 
+    /**
+   * Checks if the current displayed date is tomorrow or later.
+   * This is used to disable the "next day" button.
+   * @returns {boolean} True if currentDate is tomorrow or later, false otherwise.
+   */
+    const isDateTomorrow = () => {
+      if (!currentDate) return false; // Cannot determine if date is tomorrow if currentDate is null
+  
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Normalize to start of today
+  
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate()); // Get tomorrow's date
+  
+      const current = new Date(currentDate);
+      current.setHours(0, 0, 0, 0); // Normalize current date
+  
+      return current.getTime() >= tomorrow.getTime();
+    };
+  
+
   return (
       <Card className="mw-40">
       <CardTitle className="text-3xl flex items-center justify-center">Songle</CardTitle>
-      <CardHeader className="text-1xl flex items-center justify-center">{currentDate}</CardHeader>
+      <CardHeader className="text-1xl flex items-center flex-row justify-center gap-4">
+      <HoverCard>
+        <HoverCardTrigger>
+            <Button onClick={() => changeDate(-1)}variant="link" className="text-4xl">«</Button>
+        </HoverCardTrigger>
+        {/*<HoverCardContent>Previous Day</HoverCardContent>*/}
+      </HoverCard>
+        {displaygDate}
+        <HoverCard>
+        <HoverCardTrigger>
+            <Button onClick={() => changeDate(1)}variant="link" className="text-4xl" disabled={isDateTomorrow()}>»</Button>
+        </HoverCardTrigger>
+        {/*<HoverCardContent>Next Day</HoverCardContent>*/}
+      </HoverCard>
+        </CardHeader>
       <CardContent>
       {playlistInfo && (
         <>
-          <Player token={initialToken} isReady={playerIsReadyHandler} startTimer={startTimer}></Player>
+          <Player token={initialToken} isReady={playerIsReadyHandler} startTimer={startTimer} stopPlaying={stopPlaying}></Player>
           {!isRunning ? (
             <div className="flex justify-center gap-4">
               <Button onClick={playDailySong} disabled={!playerInfo.ready}> Play Daily Song</Button>

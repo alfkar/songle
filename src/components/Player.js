@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 
-function WebPlayback({token, isReady, startTimer}) {
+function WebPlayback({token, isReady, stopPlaying}) {
     const [player, setPlayer] = useState(undefined);
-    const [is_paused, setPaused] = useState(false);
-    const [is_active, setActive] = useState(false);
     const [current_track, setTrack] = useState(track);
     const [id, setId] = useState('');
+    const [isPaused, setPaused] = useState(true);
+    const [isActive, setActive] = useState(false);
+
 useEffect(() => {
 
     const script = document.createElement("script");
@@ -67,6 +68,14 @@ useEffect(() => {
 
     };
 }, []);
+
+useEffect(() => {
+    if (stopPlaying && player) {
+        console.log('Stopping playback...');
+        player.pause();
+    }
+}, [stopPlaying, player]); 
+
 
 return (
     <>
