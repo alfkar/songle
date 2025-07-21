@@ -26,7 +26,7 @@ import {
 } from "./ui/8bit/alert"
 
 
-export default function ArtistPicker({ songs, dailyArtists, handleArtistGuess, elapsedTime, formatTime, isRunning }) {
+export default function ArtistPicker({ songs, dailyArtists, handleArtistGuess, elapsedTime, formatTime, isRunning, resetKey }) {
   const [open, setOpen] = React.useState(false)
   const [correctArtist, setCorrectArtist] = React.useState(false)
   const [value, setValue] = React.useState("")
@@ -44,10 +44,13 @@ export default function ArtistPicker({ songs, dailyArtists, handleArtistGuess, e
     return () => clearTimeout(timer);
   }, [showErrorAnimation]);
   React.useEffect(() => {
+    setOpen(false);
     setCorrectArtist(false);
     setValue("");
+    setShowErrorAnimation(false);
     setResult('');
-  }, [dailyArtists]);
+    setGuessedArtist('');
+  }, [dailyArtists, resetKey]);
   
   const allArtists = React.useMemo(() => {
     const artistNames = new Set();

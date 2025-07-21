@@ -35,6 +35,7 @@ export const buttonVariants = cva("", {
 function Button({
   children,
   asChild,
+  isError,
   ...props
 }) {
   const { variant, size, className, font } = props;
@@ -45,40 +46,39 @@ function Button({
       className={cn(
         "rounded-none active:translate-y-1 transition-transform relative inline-flex items-center justify-center",
         font !== "normal" && "retro",
+        isError ? "shake-error border-red-500" : "",
         className
       )}
       size={size}
       variant={variant}
       asChild={asChild}>
-      <div>
+      <div className="overflow-hidden">
         {children}
 
         {variant !== "ghost" && variant !== "link" && size !== "icon" && (
           <>
             {/* Pixelated border */}
             <div
-              className="absolute -top-1.5 w-1/2 left-1.5 h-1.5 bg-foreground dark:bg-ring" />
+              className={cn("absolute -top-1.5 w-1/2 left-1.5 h-1.5", isError ? "bg-red-500" : "bg-foreground dark:bg-ring")} />
             <div
-              className="absolute -top-1.5 w-1/2 right-1.5 h-1.5 bg-foreground dark:bg-ring" />
+              className={cn("absolute -top-1.5 w-1/2 right-1.5 h-1.5", isError ? "bg-red-500" : "bg-foreground dark:bg-ring")} />
             <div
-              className="absolute -bottom-1.5 w-1/2 left-1.5 h-1.5 bg-foreground dark:bg-ring" />
+              className={cn("absolute -bottom-1.5 w-1/2 left-1.5 h-1.5", isError ? "bg-red-500" : "bg-foreground dark:bg-ring")} />
             <div
-              className="absolute -bottom-1.5 w-1/2 right-1.5 h-1.5 bg-foreground dark:bg-ring" />
-            <div className="absolute top-0 left-0 size-1.5 bg-foreground dark:bg-ring" />
-            <div className="absolute top-0 right-0 size-1.5 bg-foreground dark:bg-ring" />
-            <div className="absolute bottom-0 left-0 size-1.5 bg-foreground dark:bg-ring" />
-            <div className="absolute bottom-0 right-0 size-1.5 bg-foreground dark:bg-ring" />
+              className={cn("absolute -bottom-1.5 w-1/2 right-1.5 h-1.5", isError ? "bg-red-500" : "bg-foreground dark:bg-ring")} />
+            <div className={cn("absolute top-0 left-0 size-1.5", isError ? "bg-red-500" : "bg-foreground dark:bg-ring")} />
+            <div className={cn("absolute top-0 right-0 size-1.5", isError ? "bg-red-500" : "bg-foreground dark:bg-ring")} />
+            <div className={cn("absolute bottom-0 left-0 size-1.5", isError ? "bg-red-500" : "bg-foreground dark:bg-ring")} />
+            <div className={cn("absolute bottom-0 right-0 size-1.5", isError ? "bg-red-500" : "bg-foreground dark:bg-ring")} />
             <div
-              className="absolute top-1.5 -left-1.5 h-2/3 w-1.5 bg-foreground dark:bg-ring" />
+              className={cn("absolute top-1.5 -left-1.5 h-2/3 w-1.5", isError ? "bg-red-500" : "bg-foreground dark:bg-ring")} />
             <div
-              className="absolute top-1.5 -right-1.5 h-2/3 w-1.5 bg-foreground dark:bg-ring" />
+              className={cn("absolute top-1.5 -right-1.5 h-2/3 w-1.5", isError ? "bg-red-500" : "bg-foreground dark:bg-ring")} />
             {variant !== "outline" && (
               <>
-                {/* Top shadow */}
                 <div className="absolute top-0 left-0 w-full h-1.5 bg-foreground/20" />
                 <div className="absolute top-1.5 left-0 w-3 h-1.5 bg-foreground/20" />
 
-                {/* Bottom shadow */}
                 <div className="absolute bottom-0 left-0 w-full h-1.5 bg-foreground/20" />
                 <div className="absolute bottom-1.5 right-0 w-3 h-1.5 bg-foreground/20" />
               </>

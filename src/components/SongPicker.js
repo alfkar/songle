@@ -2,10 +2,10 @@
 "use client"
 
 import * as React from "react"
-import { CheckIcon, ChevronsUpDownIcon } from "lucide-react"
+import { CheckIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/8bit/button"
+import { Button } from "@/components/ui/8bit/button" // Ensure this is your custom 8bit button
 import {
   Command,
   CommandEmpty,
@@ -26,12 +26,36 @@ import {
 } from "./ui/8bit/alert"
 
 // Receive elapsedTime and formatTime as props
-export default function SongPicker({ songs, dailySong, handleSongGuess, elapsedTime, formatTime, isRunning }) {
+export default function SongPicker({ songs, dailySong, handleSongGuess, elapsedTime, formatTime, isRunning, resetKey }) {
   const [open, setOpen] = React.useState(false)
   const [correctSong, setCorrectSong] = React.useState(false)
   const [value, setValue] = React.useState("")
   const [showErrorAnimation, setShowErrorAnimation] = React.useState(false);
   const [result, setResult] = React.useState('');
+  const [isOverflowing, setIsOverflowing] = React.useState(false);
+  const textRef = React.useRef(null);
+  const containerRef = React.useRef(null);
+
+  React.useEffect(() => {
+    const checkOverflow = () => {
+      if (textRef.current && containerRef.current) {
+            console.log(containerRef.current)
+            console.log(containerRef.current.parentElement.clientWidth)
+            console.log(textRef.current.scrollWidth)
+        if(textRef.current.scrollWidth > containerRef.current.parentElement.clientWidth){
+          setIsOverflowing(false)
+          setIsOverflowing(true)
+        }
+        else{
+          setIsOverflowing(false)
+        }
+      }
+    };
+
+    // Defer the check to ensure accurate measurements after render
+    const timeoutId = setTimeout(checkOverflow, 0);
+    return () => clearTimeout(timeoutId);
+  }, [value]);
 
   React.useEffect(() => {
     let timer;
@@ -42,11 +66,15 @@ export default function SongPicker({ songs, dailySong, handleSongGuess, elapsedT
     }
     return () => clearTimeout(timer);
   }, [showErrorAnimation]);
+
   React.useEffect(() => {
+    setOpen(false);
     setCorrectSong(false);
     setValue("");
+    setShowErrorAnimation(false);
     setResult('');
-  }, [dailySong]);
+    setIsOverflowing(false);
+  }, [dailySong, resetKey]);
   
   const handleSongSelection = (currentValue, selectedSongName) => {
     setValue(currentValue === value ? "" : currentValue);
@@ -75,11 +103,6 @@ export default function SongPicker({ songs, dailySong, handleSongGuess, elapsedT
     );
   }
 
-  const triggerClassName = cn(
-    "w-105 justify-between overflow-scroll",
-    showErrorAnimation && "shake-error border-red-500",
-  );
-
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
@@ -87,20 +110,23 @@ export default function SongPicker({ songs, dailySong, handleSongGuess, elapsedT
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className={triggerClassName}
           disabled={!isRunning}
+          isError={showErrorAnimation}
+          className="w-full justify-between"
         >
-          <span className="flex-1 min-w-0 truncate">
-            {value
-              ? songs.find((s) => s.name === value)?.name
-              : "Select a song..."}
+          <span ref={containerRef} className="flex-1 whitespace-nowrap overflow-hidden min-w-0">
+            <span ref={textRef} className={cn("inline-block max-w-full", isOverflowing && "marquee")}>
+              {value
+                ? songs.find((s) => s.name === value)?.name
+                : "Select a song..."}
+            </span>
           </span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" side="bottom"   avoidCollisions={false} >
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" side="bottom"  avoidCollisions={false} >
         <Command>
           <CommandInput placeholder="Search for a song" />
-          <CommandList>
+          <CommandList className="max-h-60 overflow-y-auto ">
             <CommandEmpty>No song found.</CommandEmpty>
             <CommandGroup>
               {songs.map((song) => (

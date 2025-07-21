@@ -28,6 +28,7 @@ export default function PlayerCard({ token: initialToken, children }) {
   const [correctSongGuessed ,setCorrectSongGuessed] = useState(false)
   const [correctArtistGuessed ,setCorrectArtistGuessed] = useState(false)
   const [stopPlaying, setStopPlaying] = useState(false)
+  const [resetKey, setResetKey] = useState(0);
   useEffect(() => {
   let date = new Date();
   {setCurrentDate(date)}
@@ -132,6 +133,7 @@ export default function PlayerCard({ token: initialToken, children }) {
     setStopPlaying(true);
     setIsRunning(false);
     dailySong();
+    setResetKey(prevKey => prevKey + 1);
   };
 
   const fetchPlaylist = async (token) => {
@@ -264,7 +266,7 @@ export default function PlayerCard({ token: initialToken, children }) {
   
 
   return (
-      <Card className="mw-40">
+      <Card className="max-w-md">
       <CardTitle className="text-3xl flex items-center justify-center">Songle</CardTitle>
       <CardHeader className="text-1xl flex items-center flex-row justify-center gap-4">
       <HoverCard>
@@ -309,6 +311,7 @@ export default function PlayerCard({ token: initialToken, children }) {
             formatTime={formatTime}
             isRunning={isRunning}
             className="w-full"
+            resetKey={resetKey}
               />
             <ArtistPicker
             songs={playlistInfo.songs}
@@ -318,6 +321,7 @@ export default function PlayerCard({ token: initialToken, children }) {
             formatTime={formatTime}
             isRunning={isRunning}
             className="w-full"
+            resetKey={resetKey}
               />
           </div>
 
